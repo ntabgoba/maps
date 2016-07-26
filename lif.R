@@ -159,12 +159,22 @@ hahi <- colorFactor(
         domain = air_quants$air_qua
 )
 quant_plot <- leaflet() %>%
-        setView(lat = 37.4211, lng = 141.0328, zoom = 11) %>%
         addTiles()%>%
-        addRectangles(data = air4,lng1 = ~SW_eLong, lat1 = ~SW_nLat,lng2 = ~NE_eLong, lat2 = ~NE_nLat,
+        setView(lat = 37.4211, lng = 141.0328, zoom = 11) %>%
+        addRectangles(data = air_quants,lng1 = ~SW_eLong, lat1 = ~SW_nLat,lng2 = ~NE_eLong, lat2 = ~NE_nLat,
                       color = ~hahi(air_quants$air_qua))%>%
+        addLegend("bottomright", pal = hahi, values = air_quants$air_qua,
+                  title = "AvgAirDoseRates",
+                  labFormat = labelFormat(prefix = "Sv"),
+                  opacity = 1)%>%
         addPopups(lat = 37.4211, lng = 141.0328,popup = fukulink,
-                  options = popupOptions(closeButton = TRUE)) #adds popu
+                  options = popupOptions(closeButton = TRUE)) #adds popup
 quant_plot
         
-
+#Load data for 2014
+list.files()
+air03_2014 <- read_csv("marApril2014.csv")
+View(air03_2014)
+names(air03_2014) <- c("gridcode","startdate","enddate","pref","city","no_samples",
+                 "AvgAirDoseRate","NE_nLat","NE_eLong","NW_nLat","NW_eLong",
+                 "SW_nLat","SW_eLong","SE_nLat","SE_eLong")
