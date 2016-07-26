@@ -40,3 +40,59 @@ lnd_central <- lnd[lnd_buffer,] # the selection is too big!
 plot(lnd_central, col = "lightblue", add = T)
 plot(lnd_buffer, add = T) # some areas just touch the buffer
 
+##
+##
+##
+# method2 of subsetting selects only points within the buffer
+lnd_cents <- SpatialPoints(coordinates(lnd),
+                           proj4string = CRS(proj4string(lnd))) # create spatialpoints
+sel <- lnd_cents[lnd_buffer,] # select points inside buffer
+points(sel) # show where the points are located
+lnd_central <- lnd[sel,] # select zones intersecting w. sel
+plot(lnd_central, add = T, col = "lightslateblue", 
+     border = "grey")
+plot(lnd_buffer, add = T, border = "red", lwd = 2)
+
+# Add text to the plot!
+text(coordinates(cent_lnd), "Central\nLondon")
+
+#Create an outline of the London area by merging all the polyogns
+# in the lnd object
+london = gUnaryUnion(lnd, lnd$dummy)
+london = SpatialPolygonsDataFrame(london, data.frame(dummy = c("london")), match.ID = FALSE)
+plot(london)
+
+# Find the centre of the london area
+centrelondon = gCentroid(london, byid = TRUE)
+
+# create coordinates to store the start and end points of the lines
+c1 = c(centrelondon$x, centrelondon$x)
+c2 = c(90, -90)
+c3 = c(90, -90)
+c4 = c(centrelondon$y, centrelondon$y)
+
+# simple line strings using the created coordinates
+L1 = Line(cbind(c1, c2))
+L2 = Line(cbind(c3, c4))
+
+#create the lines 
+Ls1 <- Lines(list(L1), ID = "a")
+Ls2 <- Lines(list(L2), ID = "b")
+# convert the lines into SpatialLines
+Ls1 <- SpatialLines(LinesList = list(Ls1)) 
+Ls2 <- SpatialLines(LinesList = list(Ls2))
+#convert the lines into SpatialLines
+# convert again into SpatialLinesDataFrame
+Longitude = SpatialLinesDataFrame(Ls1, data.frame(Z = c("1", "2"), row.names = c("a","b"))) 
+Latitude = SpatialLinesDataFrame(Ls2, data.frame(Z = c("1", "2"), row.names = c("a","b")))
+# arguments to test whether or not a coordinate is east or north of the centre
+east <- coordinates(lnd)[,1] > Longitude@lines[[1]]@Lines[[1]]@coords[,1][1] 
+north <- coordinates(lnd)[,2] > Latitude@lines[[1]]@Lines[[1]]@coords[,2][1]
+# test if the coordinate is east and north of the centre
+lnd@data$quadrant[east & north] <- "northeast"
+
+names(lnd)
+str(lnd$Partic_Per)
+summary(lnd)
+
+
