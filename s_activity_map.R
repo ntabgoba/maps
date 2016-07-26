@@ -130,5 +130,28 @@ tm_shape(lnd) +
         tm_fill("Pop_2001", thres.poly = 0) +
         tm_facets("name", free.coords=TRUE, drop.shapes=TRUE) +
         tm_layout(legend.show = FALSE, title.position = c("center", "center"), title.size = 20)
+library(ggplot2)
+library(ggmap)
+p <- ggplot(lnd@data, aes(Partic_Per, Pop_2001))
+p + geom_point()
+p + geom_point(colour = "red", size=2)
+p + geom_point(aes(colour=Partic_Per, size=Pop_2001))
+p + geom_point(aes(colour = Partic_Per, size = Pop_2001)) + geom_text(size = 2, aes(label = name))
+library(rgeos)
+lnd_f <- fortify(lnd)
+head(lnd_f, n=2) # join the data
+lnd$id <- row.names(lnd)
+head(lnd@data, n = 2)
+library(dplyr)
+lnd_f <- left_join(lnd_f, lnd@data)
+lnd_f[1:2, 1:8]
+map <- ggplot(lnd_f, aes(long, lat, group= group, fill = Partic_Per)) +
+        geom_polygon() +
+        coord_equal()+
+        labs(x = "Easting(m)", y = "Northing (m)",
+             fill = "% Sports\nParticipation") +
+        ggtitle("London Sports Participation")
+map + scale_fill_gradient(low="white", high = "black")
+
 
 
