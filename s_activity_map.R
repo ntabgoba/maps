@@ -96,3 +96,39 @@ str(lnd$Partic_Per)
 summary(lnd)
 
 
+## Part III
+# Creating and manipulating spatial data
+vec <- vector(mode = "numeric", length = 3)
+df <- data.frame(x = 1:3, y = c(1/2, 2/3, 3/4))
+class(vec)
+class(df)
+# same logic works with spatial data
+#To create a SpatialPoints
+# object, for example, the input coordinates must be supplied in a matrix:
+mat <- as.matrix(df)
+sp1 <- SpatialPoints(coords = mat)
+#fundamental data types for spatial data. 
+#(The others are lines, polygons and pixels,
+# which can be created by SpatialLines, SpatialPolygons and SpatialPixels, respectively
+class(sp1)
+spdf <- SpatialPointsDataFrame(sp1, data = df)
+class(spdf)
+
+## Coordinate Reference System (CRS)- defines where spatial
+# objects are place on the Earth Surface.
+
+# Part IV: Making maps with tmap, ggplot2 and leaflet
+vignette(package = "tmap")
+vignette("tmap-nutshell")
+library(tmap,ggplot2)
+#tmap
+
+qtm(shp = lnd, fill = "Partic_Per", fill.palette = "-Blues")
+
+qtm(shp = lnd, fill = c("Partic_Per", "Pop_2001"), fill.palette = c("Blues"),ncol = 2)
+tm_shape(lnd) +
+        tm_fill("Pop_2001", thres.poly = 0) +
+        tm_facets("name", free.coords=TRUE, drop.shapes=TRUE) +
+        tm_layout(legend.show = FALSE, title.position = c("center", "center"), title.size = 20)
+
+
