@@ -1,0 +1,12 @@
+# Ignore csv files,since available on jaea website
+*.csv
+
+# ignore Mac Finder's metadata file
+.DS_Store
+
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
